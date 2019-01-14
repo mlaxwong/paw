@@ -14,5 +14,17 @@
             "paw\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "^2.0.15",
+        "voskobovich/yii2-linker-behavior": "^4.1",
+        "yiisoft/yii2-swiftmailer": "~2.0.0",
+        "nterms/yii2-mailqueue": "^0.0.14"
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.4",
+        "phpstan/phpstan": "^0.10.2",
+        "vlucas/phpdotenv": "^2.5",
+        "phpunit/php-code-coverage": "^6.0"
+    }
 }
