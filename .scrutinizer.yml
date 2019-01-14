@@ -1,0 +1,31 @@
+build:
+    environment:
+        php:
+            version: 7.1.*
+    tests:
+        before:
+            - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS codeception;'
+            - mkdir migrations
+            - cp src/config/testenv/.scrutinizer.env .env
+            # - php paws-test migrate/up --interactive=0
+        override:
+            -
+                command: 'vendor/bin/codecept run unit --coverage --coverage-xml /home/scrutinizer/build/coverage.xml --coverage-html'
+                coverage:
+                    file: 'coverage.xml'
+                    format: 'php-clover'
+
+filter:
+    excluded_paths:
+        - 'tests/*'
+
+checks:
+    php: true
+
+build_failure_conditions:
+    - 'elements.rating(<= C).exists'
+    - 'elements.rating(<= C).new.exists'
+    - 'issues.label("coding-style").new.count > 5'
+    #- 'project.metric("scrutinizer.quality", < 9.8)'
+    #- 'project.metric("scrutinizer.test_coverage", < 0.90)'
+    #- 'project.metric_change("scrutinizer.test_coverage", < -0.2)'

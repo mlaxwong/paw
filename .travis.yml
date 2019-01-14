@@ -1,0 +1,22 @@
+language: php
+php:
+  - '7.1'
+  # - '7.2'
+
+# env:
+  # matrix:
+    # - COMPOSER_OPTIONS="--prefer-dist"
+    # - COMPOSER_OPTIONS=""
+
+before_install:
+  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS codeception;'
+  - mkdir migrations
+  - cp src/config/testenv/.travis.env .env
+
+install:
+  # - composer install $COMPOSER_OPTIONS
+  - composer install --prefer-source
+  # - php paws-test migrate/up --interactive=0
+
+script:
+  - composer ci
