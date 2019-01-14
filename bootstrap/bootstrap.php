@@ -1,8 +1,4 @@
 <?php
-// temp
-define('PATH_BASE', dirname(__DIR__));
-define('PATH_VENDOR', PATH_BASE . '/vendor');
-
 // requirement
 require __DIR__ . '/requirement.php';
 

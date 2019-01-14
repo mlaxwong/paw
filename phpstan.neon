@@ -1,0 +1,7 @@
+parameters:
+    autoload_files:
+        #- %rootDir%/../../../src/Paws.php
+    excludes_analyse:
+        - %rootDir%/../../../tests/*
+        - %rootDir%/../../../config/*
+        - %rootDir%/../../../bootstrap/*
