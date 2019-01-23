@@ -9,7 +9,7 @@ if (!extension_loaded('mbstring') || (extension_loaded('mbstring') && ini_get('m
 }
 
 // constant
-foreach (['PATH_BASE', 'PATH_VENDOR'] as $requiredConstant) 
+foreach (['PATH_ROOT', 'PATH_BASE', 'PATH_VENDOR'] as $requiredConstant) 
 {
     if (!defined($requiredConstant)) exit(strtr("Must declare constant '{{constant}}'", ['{{constant}}' => $requiredConstant]));
     // free up memory
