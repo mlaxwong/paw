@@ -8,5 +8,8 @@ return [
             'showScriptName' => false,
             'enableStrictParsing' => false,
         ],
+        'view' => [
+            'class' => paw\web\View::class,
+        ]
     ],
 ];
