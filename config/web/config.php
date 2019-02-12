@@ -10,9 +10,6 @@ return [
         ],
         'view' => [
             'class' => paw\web\View::class,
-            'theme' => [
-                'class' => paw\web\Theme::class,
-            ],
         ]
     ],
 ];
