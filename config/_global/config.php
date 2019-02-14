@@ -4,6 +4,7 @@ return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
+        '@paw'   => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src',
     ],
     'components' => [
         'db' => [
