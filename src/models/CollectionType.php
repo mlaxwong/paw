@@ -1,11 +1,11 @@
 <?php
-namespace paw\records;
+namespace paw\models;
 
 use yii\db\ActiveRecord;
 use voskobovich\linker\LinkerBehavior;
 use Yii;
-use paw\records\Collection;
-use paw\records\CollectionField;
+use paw\models\Collection;
+use paw\models\CollectionField;
 
 class CollectionType extends ActiveRecord
 {

@@ -1,9 +1,9 @@
 <?php
-namespace paw\records;
+namespace paw\models;
 
 use yii\db\ActiveRecord;
-use paw\records\CollectionField;
-use paw\records\Collection;
+use paw\models\CollectionField;
+use paw\models\Collection;
 
 class CollectionValue extends ActiveRecord
 {

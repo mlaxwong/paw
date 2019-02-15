@@ -1,8 +1,8 @@
 <?php
-namespace paw\records;
+namespace paw\models;
 
 use yii\db\ActiveRecord;
-use paw\records\CollectionType;
+use paw\models\CollectionType;
 use paw\base\Field;
 
 class CollectionField extends ActiveRecord
