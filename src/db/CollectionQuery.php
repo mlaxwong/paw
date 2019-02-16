@@ -134,7 +134,7 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
                         if ($valueModel) $row[$attribute] = $valueModel->value;
                     }
                 }
-                $modelClass::populateModel($model, $row);
+                $modelClass::populateRecord($model, $row);
                 $models[] = $model;
             }
             return $models;
