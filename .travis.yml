@@ -16,7 +16,7 @@ before_install:
 install:
   # - composer install $COMPOSER_OPTIONS
   - composer install --prefer-source
-  # - php paws-test migrate/up --interactive=0
+  # - php yii-test migrate/up --interactive=0
 
 script:
   - composer ci

@@ -1,6 +1,6 @@
 parameters:
     autoload_files:
-        #- %rootDir%/../../../src/Paws.php
+        #- %rootDir%/../../../src/Yii.php
     excludes_analyse:
         - %rootDir%/../../../tests/*
         - %rootDir%/../../../config/*

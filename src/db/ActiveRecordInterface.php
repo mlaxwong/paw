@@ -1,5 +1,5 @@
 <?php
-namespace paws\db;
+namespace paw\db;
 
 interface ActiveRecordInterface extends \yii\db\ActiveRecordInterface
 {

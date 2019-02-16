@@ -7,7 +7,7 @@ build:
             - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS codeception;'
             - mkdir migrations
             - cp src/config/testenv/.scrutinizer.env .env
-            # - php paws-test migrate/up --interactive=0
+            # - php yii-test migrate/up --interactive=0
         override:
             -
                 command: 'vendor/bin/codecept run unit --coverage --coverage-xml /home/scrutinizer/build/coverage.xml --coverage-html'
