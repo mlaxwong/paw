@@ -1,7 +1,7 @@
 <?php
 namespace paw\migrations;
 
-use paws\db\Migration;
+use paw\db\Migration;
 
 class M190215093439_create_table_collection_field extends Migration
 {

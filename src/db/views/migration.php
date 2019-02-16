@@ -12,7 +12,7 @@ if (!empty($namespace)) {
 }
 ?>
 
-use paws\db\Migration;
+use paw\db\Migration;
 
 class <?= $className ?> extends Migration
 {

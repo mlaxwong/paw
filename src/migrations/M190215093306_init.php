@@ -1,7 +1,7 @@
 <?php
 namespace paw\migrations;
 
-use paws\db\Migration;
+use paw\db\Migration;
 
 class M190215093306_init extends Migration
 {
