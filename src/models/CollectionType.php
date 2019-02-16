@@ -1,15 +1,15 @@
 <?php
 namespace paw\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use voskobovich\linker\LinkerBehavior;
-use Yii;
 use paw\models\Collection;
 use paw\models\CollectionField;
 
 class CollectionType extends ActiveRecord
 {
-    const MODE_CHANNEL   = 'channel';
+    const MODE_LIST   = 'list';
     const MODE_SINGLE    = 'single';
     const MODE_NESTEDSET = 'nestedset';
 
@@ -31,7 +31,7 @@ class CollectionType extends ActiveRecord
     public static function getModes(): array
     {
         return [
-            self::MODE_CHANNEL      => Yii::t('app', 'Channel'),
+            self::MODE_LIST      => Yii::t('app', 'Channel'),
             self::MODE_SINGLE       => Yii::t('app', 'Single'),
             self::MODE_NESTEDSET    => Yii::t('app', 'Nested Set'),
         ];

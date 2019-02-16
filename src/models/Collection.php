@@ -1,8 +1,8 @@
 <?php
 namespace paw\models;
 
-use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveRecord;
 use paw\models\CollectionType;
 use paw\models\CollectionValue;
 use paw\behaviors\TimestampBehavior;
