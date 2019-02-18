@@ -120,8 +120,8 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
             foreach ($rows as $row) {
                 $model = $class::instantiate($row);
                 $modelClass = get_class($model);
-                if ($type === null)
-                {
+                // if ($type === null)
+                // {
                     $fieldClass = $model::collectionFieldModel();
                     $valueClass = $model::collectionValueModel();
                     foreach ($model->getCustomAttributes() as $attribute)
@@ -133,7 +133,7 @@ class CollectionQuery extends ActiveQuery implements ActiveQueryInterface
                             ->one();
                         if ($valueModel) $row[$attribute] = $valueModel->value;
                     }
-                }
+                // }
                 $modelClass::populateRecord($model, $row);
                 $models[] = $model;
             }

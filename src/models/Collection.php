@@ -5,6 +5,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use paw\models\CollectionType;
 use paw\models\CollectionValue;
+use paw\models\CollectionField;
 use paw\behaviors\TimestampBehavior;
 
 class Collection extends ActiveRecord
@@ -49,5 +50,10 @@ class Collection extends ActiveRecord
     public function getCollectionValues()
     {
         return $this->hasMany(CollectionValue::class, ['collection_id' => 'id']);
+    }
+
+    public function getCollectionExtraFields()
+    {
+        return $this->hasMany(CollectionField::class, ['id' => 'collection_field_id'])->viaTable('{{%collection_extra_field_map}}', ['collection_id' => 'id']);
     }
 }

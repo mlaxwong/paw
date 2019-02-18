@@ -18,11 +18,16 @@ class Collection extends BaseActiveRecord implements CollectionInterface
 
     public $typeId;
 
+    public $_id;
+
     private $_oldAttributes;
 
     public static function instantiate($row)
     {
-        return new static(['typeId' => $row[static::typeAttribute()]]);
+        return new static([
+            'typeId' => $row[static::typeAttribute()],
+            '_id' => $row['id'],
+        ]);
     }
 
     public static function collectionModel() 
@@ -75,8 +80,19 @@ class Collection extends BaseActiveRecord implements CollectionInterface
 
     public function getCustomAttributes()
     {
+        return ArrayHelper::merge($this->getTypeCustomAttributes(), $this->getExtraCustomAttributes());
+    }
+
+    public function getTypeCustomAttributes()
+    {
         $type = $this->getType();
         return  $type ? ArrayHelper::getColumn($type->fields, 'handle') : [];
+    }
+
+    public function getExtraCustomAttributes()
+    {
+        $collection = $this->getCollection();
+        return $collection ? ArrayHelper::getColumn($collection->collectionExtraFields, 'handle') : [];
     }
 
     public function baseRules()
@@ -115,6 +131,12 @@ class Collection extends BaseActiveRecord implements CollectionInterface
     {
         $typeClass = static::collectionTypeModel();
         return $typeClass::findOne($this->typeId);
+    }
+
+    public function getCollection()
+    {
+        $collectionClass = static::collectionModel();
+        return $collectionClass::findOne($this->_id);
     }
 
     public static function primaryKey()
