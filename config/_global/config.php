@@ -16,5 +16,11 @@ return [
             'charset' => 'utf8',
             // 'enableSchemaCache' => YII_ENV_PROD,
         ],
+        'resource' => [
+            'class' => paw\services\Resource::class,
+            'namespaces' => [
+                'paw\\resources'
+            ],
+        ]
     ]
 ];

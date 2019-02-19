@@ -1,5 +1,5 @@
 <?php
-namespace paw\models;
+namespace paw\collections;
 
 class Collection extends \paw\db\Collection
 {
