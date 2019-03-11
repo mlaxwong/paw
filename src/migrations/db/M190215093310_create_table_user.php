@@ -1,9 +1,9 @@
 <?php
-namespace paw\migrations;
+namespace paw\migrations\db;
 
 use paw\db\Migration;
 
-class M190215095540_create_table_user extends Migration
+class M190215093310_create_table_user extends Migration
 {
     public function safeUp()
     {
@@ -48,7 +48,7 @@ class M190215095540_create_table_user extends Migration
 
     public function down()
     {
-        echo "M190215095540_create_table_user cannot be reverted.\n";
+        echo "M190215093310_create_table_user cannot be reverted.\n";
 
         return false;
     }

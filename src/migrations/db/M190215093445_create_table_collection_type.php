@@ -1,5 +1,5 @@
 <?php
-namespace paw\migrations;
+namespace paw\migrations\db;
 
 use paw\db\Migration;
 
