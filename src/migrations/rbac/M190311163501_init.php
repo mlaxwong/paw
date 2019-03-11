@@ -10,7 +10,7 @@ class M190311163501_init extends Migration
 {
     public function safeUp()
     {
-        $authManager = Paws::$app->authManager;
+        $authManager = Yii::$app->authManager;
 
         // reset
         $authManager->removeAll();

@@ -8,6 +8,7 @@ require PATH_VENDOR . '/autoload.php';
 // bootstrap helpers
 require __DIR__ . '/helpers/env.php';
 require __DIR__ . '/helpers/configbuilder.php';
+require __DIR__ . '/helpers/configbypath.php';
 
 // load env
 // (new Dotenv\Dotenv(PATH_CONFIG))->load();
@@ -21,7 +22,4 @@ defined('YII_DEBUG') or define('YII_DEBUG', env('ENV') == 'dev' ?: false);
 require PATH_VENDOR . '/yiisoft/yii2/Yii.php';
 
 // config
-return configbuilder([
-    dirname(__DIR__) . '/config/_global/config.php',
-    dirname(__DIR__) . '/config/_global/' . ENV . '.config.php',
-]);
+return configbypath(dirname(__DIR__) . '/config/_global');
