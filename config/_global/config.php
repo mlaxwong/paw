@@ -16,6 +16,10 @@ return [
             'charset' => 'utf8',
             // 'enableSchemaCache' => YII_ENV_PROD,
         ],
+        'user' => [
+            'class' => paw\services\User::class,
+            'identityClass' => paw\models\User::class,
+        ],
         'authManager' => [
             'class' => yii\rbac\DbManager::class,
         ],
