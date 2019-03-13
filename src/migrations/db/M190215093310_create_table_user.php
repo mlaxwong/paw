@@ -14,6 +14,7 @@ class M190215093310_create_table_user extends Migration
             'password_hash' => $this->string()->notNull(),
             'email' => $this->string()->notNull()->unique(),
             'name' => $this->string(126)->defaultValue(NULL),
+            'status' => $this->string(64)->defaultValue(NULL),
             'created_at' => $this->timestamp()->defaultValue(NULL),
             'updated_at' => $this->timestamp()->defaultValue(NULL),
             'logged_at' => $this->timestamp()->defaultValue(NULL),

@@ -3,7 +3,7 @@ namespace paw\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
+use paw\web\IdentityInterface;
 use paw\behaviors\TimestampBehavior;
 
 class User extends ActiveRecord implements IdentityInterface
@@ -77,5 +77,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+    public function getLoggedAtColumn()
+    {
+        return 'logged_at';
     }
 }
