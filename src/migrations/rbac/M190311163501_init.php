@@ -10,28 +10,7 @@ class M190311163501_init extends Migration
 {
     public function safeUp()
     {
-        $authManager = Yii::$app->authManager;
-
-        // reset
-        $authManager->removeAll();
-
-        // permission 
-        $developer = $authManager->createRole(Role::ROLE_DEVELOPER);
-		$authManager->add($developer);
-
-		$admin = $authManager->createRole(Role::ROLE_ADMIN);
-		$authManager->add($admin);
-        $authManager->addChild($developer, $admin);
-
-        $user = $authManager->createRole(Role::ROLE_USER);
-		$authManager->add($user);
-        $authManager->addChild($admin, $user);
-
-        $guest = $authManager->createRole(Role::ROLE_GUEST);
-		$authManager->add($guest);
-        $authManager->addChild($user, $guest);
-
-        $authManager->assign($developer, 1);
+        
     }
 
     public function safeDown()
