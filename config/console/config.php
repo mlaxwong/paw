@@ -9,6 +9,7 @@ return [
             'migrationNamespaces' => [
                 'paw\migrations\db',
             ],
+            'migrationTable' => '{{%system_migration_db}}'
         ],
         'rbac-migrate' => [
             'class' => paw\commands\MigrateController::class,
@@ -16,6 +17,7 @@ return [
             'migrationNamespaces' => [
                 'paw\migrations\rbac',
             ],
+            'migrationTable' => '{{%system_migration_rbac}}'
         ],
     ],
 ];
