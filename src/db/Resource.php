@@ -147,14 +147,14 @@ abstract class Resource extends Model implements ActiveQueryInterface
     public function orderBy($columns)
     {
         $query = $this->getQuery();
-        $query->orderBy($condition);
+        $query->orderBy($columns);
         return $this;
     }
 
     public function addOrderBy($columns)
     {
         $query = $this->getQuery();
-        $query->addOrderBy($condition);
+        $query->addOrderBy($columns);
         return $this;
     }
 
