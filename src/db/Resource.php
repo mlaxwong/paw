@@ -8,6 +8,8 @@ use yii\data\ActiveDataProvider;
 
 abstract class Resource extends Model implements ActiveQueryInterface
 {
+    protected $_dataprovider = null;
+
     protected $_query = null;
 
     protected $_pagination = false;
@@ -44,17 +46,21 @@ abstract class Resource extends Model implements ActiveQueryInterface
 
     public function getDataProvider()
     {
-        $query = $this->getQuery();
-        
-        $this->loadQueryParams();
-
-        $this->search($query);
-
-        return new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => $this->_pagination,
-            'sort' => $this->_sort,
-        ]);
+        if ($this->_dataprovider === null)
+        {
+            $query = $this->getQuery();
+            
+            $this->loadQueryParams();
+    
+            $this->search($query);
+    
+            $this->_dataprovider = new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => $this->_pagination,
+                'sort' => $this->_sort,
+            ]);
+        }
+        return $this->_dataprovider;
     }
 
     protected function loadQueryParams()
