@@ -1,6 +1,6 @@
 <?php
 return [
-    'class' => yii\console\Application::class,
+    'class' => paw\console\Application::class,
     'id' => 'yii2-console-application',
     'controllerMap' => [
         'migrate' => [

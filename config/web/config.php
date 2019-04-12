@@ -1,6 +1,6 @@
 <?php
 return [
-    'class' => yii\web\Application::class,
+    'class' => paw\web\Application::class,
     'id' => 'yii2-web-application',
     'components' => [
         'urlManager' => [
@@ -12,4 +12,11 @@ return [
             'class' => paw\web\View::class,
         ],
     ],
+    // 'on beforeRequest' => function () {
+    //     $app = Yii::$app;
+    //     $pathInfo = $app->request->pathInfo;
+    //     if (!empty($pathInfo) && substr($pathInfo, -1) !== '/') {
+    //         $app->response->redirect('/' . rtrim($pathInfo) . '/', 301);
+    //     }
+    // },
 ];
