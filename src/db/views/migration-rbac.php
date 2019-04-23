@@ -12,7 +12,6 @@ if (!empty($namespace)) {
 }
 ?>
 
-use Yii;
 use paw\db\Migration;
 use paw\rbac\Role;
 use paw\rbac\Permission;

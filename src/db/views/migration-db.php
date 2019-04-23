@@ -12,7 +12,6 @@ if (!empty($namespace)) {
 }
 ?>
 
-use Yii;
 use paw\db\Migration;
 
 class <?= $className ?> extends Migration
