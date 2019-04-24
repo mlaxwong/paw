@@ -1,5 +1,5 @@
 <?php
-namespace paw\cp;
+namespace paw;
 
 class Plugin
 {
