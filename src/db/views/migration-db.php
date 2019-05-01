@@ -14,8 +14,11 @@ if (!empty($namespace)) {
 
 use paw\db\Migration;
 
-class <?= $className ?> extends Migration
+class <?=$className?> extends Migration
 {
+    use \paw\db\TextTypesTrait;
+    use \paw\db\DefaultColumn;
+
     public function safeUp()
     {
 
@@ -23,7 +26,7 @@ class <?= $className ?> extends Migration
 
     public function safeDown()
     {
-        echo "<?= $className ?> cannot be reverted.\n";
+        echo "<?=$className?> cannot be reverted.\n";
 
         return false;
     }
@@ -37,7 +40,7 @@ class <?= $className ?> extends Migration
 
     public function down()
     {
-        echo "<?= $className ?> cannot be reverted.\n";
+        echo "<?=$className?> cannot be reverted.\n";
 
         return false;
     }

@@ -1,10 +1,11 @@
 <?php
 return [
     'id' => 'yii2-application',
+    'timeZone' => 'Asia/Kuala_Lumpur',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-        '@paw'   => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src',
+        '@npm' => '@vendor/npm-asset',
+        '@paw' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src',
     ],
     'components' => [
         'db' => [
@@ -22,8 +23,8 @@ return [
         'resource' => [
             'class' => paw\services\Resource::class,
             'namespaces' => [
-                'paw\\resources'
+                'paw\\resources',
             ],
-        ]
-    ]
+        ],
+    ],
 ];

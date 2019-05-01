@@ -3,8 +3,8 @@ namespace paw\db;
 
 use Yii;
 use yii\base\Model;
-use yii\db\ActiveQueryInterface;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQueryInterface;
 
 abstract class Resource extends Model implements ActiveQueryInterface
 {
@@ -15,6 +15,8 @@ abstract class Resource extends Model implements ActiveQueryInterface
     protected $_pagination = false;
 
     protected $_sort = false;
+
+    protected $_findMethod = 'find';
 
     abstract public static function modelClass();
 
@@ -34,26 +36,47 @@ abstract class Resource extends Model implements ActiveQueryInterface
         return new static($config);
     }
 
+    public function setFindMethod($findMethod)
+    {
+        $this->_query = null;
+        $this->_findMethod = $findMethod;
+    }
+
+    public function getFindMethod()
+    {
+        return $this->_findMethod;
+    }
+
     public function getQuery()
     {
-        if ($this->_query === null)
-        {
+        if ($this->_query === null) {
             $modelClass = static::modelClass();
-            $this->_query = $modelClass::find();
+            $this->_query = call_user_func([$modelClass, $this->getFindMethod()]);
         }
         return $this->_query;
     }
 
+    public function withTrashed()
+    {
+        $this->setFindMethod('findWithTrashed');
+        return $this;
+    }
+
+    public function trashed()
+    {
+        $this->setFindMethod('findTrashed');
+        return $this;
+    }
+
     public function getDataProvider()
     {
-        if ($this->_dataprovider === null)
-        {
+        if ($this->_dataprovider === null) {
             $query = $this->getQuery();
-            
+
             $this->loadQueryParams();
-    
+
             $this->search($query);
-    
+
             $this->_dataprovider = new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => $this->_pagination,
@@ -184,7 +207,6 @@ abstract class Resource extends Model implements ActiveQueryInterface
         return $this;
     }
 
-
     public function asArray($value = true)
     {
         $query = $this->getQuery();
@@ -211,5 +233,17 @@ abstract class Resource extends Model implements ActiveQueryInterface
         $query = $this->getQuery();
         $query->findFor($name, $model);
         return $this;
+    }
+
+    public function __call($method, $params)
+    {
+        $whiteListedMethods = ['getQuery', 'hasMethod'];
+        if (!in_array($method, $whiteListedMethods)) {
+            $query = $this->getQuery();
+            if (!$this->hasMethod($method) && $query->hasMethod($method)) {
+                return call_user_func_array([$query, $method], $params);
+            }
+        }
+        return parent::__call($method, $params);
     }
 }
