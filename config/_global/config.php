@@ -26,5 +26,8 @@ return [
                 'paw\\resources',
             ],
         ],
+        'cache' => [
+            'class' => yii\caching\FileCache::class,
+        ],
     ],
 ];

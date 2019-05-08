@@ -11,6 +11,10 @@ return [
         'view' => [
             'class' => paw\web\View::class,
         ],
+        'thumbnail' => [
+            'class' => paw\services\Thumbnail::class,
+            'enableCaching' => true,
+        ],
     ],
     // 'on beforeRequest' => function () {
     //     $app = Yii::$app;
