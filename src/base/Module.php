@@ -54,7 +54,18 @@ class Module extends \yii\base\Module
                 $basename = basename($file, '.php');
                 $class = $controllerNamespace . '\\' . $basename;
                 $id = strtolower(basename($file, 'Controller.php'));
-                return compact('id', 'class', 'file');
+                $actions = [];
+                $methods = get_class_methods($class);
+                if ($methods) {
+                    $actions = array_filter($methods, function ($methodName) {
+                        return preg_match('/^action[A-Z]([a-zA-Z]+)?/i', $methodName) && $methodName != 'actions';
+                    });
+                    array_walk($actions, function (&$item, $key) {
+                        $item = strtolower($item);
+                        $item = preg_replace('/^action/i', '', $item);
+                    });
+                }
+                return compact('id', 'class', 'file', 'actions');
             });
         }
         return $this->_controllers;

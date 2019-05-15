@@ -8,13 +8,11 @@ class Resource extends Component
 {
     public $namespaces = [];
 
-    public function get($handle)
+    public function get($handle, $config = [])
     {
-        foreach ($this->namespaces as $namespace)
-        {
+        foreach ($this->namespaces as $namespace) {
             $class = '\\' . $namespace . '\\' . Inflector::classify($handle);
-            if (class_exists($class) && $class::getInstance() instanceof \paw\db\Resource) 
-            {
+            if (class_exists($class) && $class::getInstance($config) instanceof \paw\db\Resource) {
                 return $class::getInstance();
                 break;
             }
