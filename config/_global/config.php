@@ -9,7 +9,7 @@ return [
     ],
     'components' => [
         'db' => [
-            'class' => 'yii\db\Connection',
+            'class' => yii\db\Connection::class,
             'dsn' => env('DB_DSN', 'mysql:host=localhost;port=3306;dbname=database_v1'),
             'username' => env('DB_USERNAME'),
             'password' => env('DB_PASSWORD'),
@@ -28,6 +28,24 @@ return [
         ],
         'cache' => [
             'class' => yii\caching\FileCache::class,
+        ],
+        'mailer' => [
+            'class' => yii\swiftmailer\Mailer::class,
+        ],
+        'mailqueue' => [
+            'class' => nterms\mailqueue\MailQueue::class,
+            'table' => '{{%mail_queue}}',
+            'mailsPerRound' => 10,
+            'maxAttempts' => 3,
+            'viewPath' => '@root/backend/src/mail',
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'mail.tritiq.com',
+                'username' => 'no-reply@tritiq.com',
+                'password' => 'FnZOY3E9,-Vy',
+                'port' => '587',
+                'encryption' => 'tls',
+            ],
         ],
     ],
 ];

@@ -47,13 +47,14 @@ class Module extends \yii\base\Module
             $controllerNamespace = $this->controllerNamespace;
             $controllerPath = $this->getControllerPath();
             $files = FileHelper::findFiles($controllerPath, ['only' => ['*Controller.php']]);
-            return ArrayHelper::map($files, function ($file) {
+            $this->_controllers = ArrayHelper::map($files, function ($file) {
                 $basename = basename($file, 'Controller.php');
                 return strtolower($basename);
             }, function ($file) use ($controllerNamespace) {
                 $basename = basename($file, '.php');
                 $class = $controllerNamespace . '\\' . $basename;
                 $id = strtolower(basename($file, 'Controller.php'));
+                $controller = new $class($id, $this);
                 $actions = [];
                 $methods = get_class_methods($class);
                 if ($methods) {
@@ -65,6 +66,7 @@ class Module extends \yii\base\Module
                         $item = preg_replace('/^action/i', '', $item);
                     });
                 }
+                $actions = ArrayHelper::merge($actions, array_keys($controller->actions()));
                 return compact('id', 'class', 'file', 'actions');
             });
         }
