@@ -37,15 +37,6 @@ return [
             'table' => '{{%mail_queue}}',
             'mailsPerRound' => 10,
             'maxAttempts' => 3,
-            'viewPath' => '@root/backend/src/mail',
-            'transport' => [
-                'class' => 'Swift_SmtpTransport',
-                'host' => 'mail.tritiq.com',
-                'username' => 'no-reply@tritiq.com',
-                'password' => 'FnZOY3E9,-Vy',
-                'port' => '587',
-                'encryption' => 'tls',
-            ],
         ],
     ],
 ];

@@ -1,16 +1,18 @@
 <?php
 namespace paw\models;
 
-use Yii;
-use yii\db\ActiveRecord;
-use yii\db\Expression;
-use paw\behaviors\TimestampBehavior;
 use paw\behaviors\SerializeBehavior;
+use paw\behaviors\TimestampBehavior;
+use paw\helpers\Json;
+use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\db\ActiveRecord;
 
 class Token extends ActiveRecord
 {
+    const SCENARIO_CREATE = 'scenario_create';
+
     const TOKEN_DEFAULT_DURATION = 1 * 24 * 60 * 60;
-    const TOKEN_SECRET_LENGTH = 6;
     const TOKEN_ALGO = 'sha1';
 
     public $duration = null;
@@ -18,10 +20,12 @@ class Token extends ActiveRecord
     public function behaviors()
     {
         return [
-            ['class' => TimestampBehavior::class],
+            TimestampBehavior::class,
+            BlameableBehavior::class,
             [
                 'class' => SerializeBehavior::class,
                 'attributes' => ['model_primary_key', 'data'],
+                'serializeMethod' => SerializeBehavior::METHOD_JSON,
             ],
         ];
     }
@@ -34,9 +38,8 @@ class Token extends ActiveRecord
     public function rules()
     {
         return [
-            [['token_key', 'duration'], 'required'],
-            [['type', 'token_key'], 'string'],
-            [['secret'], 'string', 'length' => self::TOKEN_SECRET_LENGTH],
+            [['duration'], 'required', 'on' => self::SCENARIO_CREATE],
+            [['public_key', 'secret_key'], 'string'],
             [['duration'], 'integer'],
             [['expire_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
             [['created_at', 'updated_at', 'model_class', 'model_primary_key', 'data'], 'safe'],
@@ -45,78 +48,80 @@ class Token extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        if (!parent::beforeSave($insert)) return false;
-        if ($this->duration) $this->expire_at = date('Y-m-d H:i:s', time() + $this->duration);
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($this->duration) {
+            $this->expire_at = new \yii\db\Expression('DATE_ADD(NOW(), INTERVAL ' . $this->duration . ' SECOND)');
+            // $this->expire_at = date('Y-m-d H:i:s', time() + $this->duration);
+        }
+
+        if ($insert) {
+            // generate token public & secrect key
+            $this->generatePublicKey();
+        }
+
+        $data = $this->getFormattedData();
+        $this->data = $this->serializeData($data);
+
         return true;
     }
 
-    public function verifyData($data)
+    public function validData($public_key, array $data = [])
     {
+        $data = $this->getFormattedData($data);
+        $serializeData = $this->serializeData($data);
+        return $public_key == self::getPublicKey($this->secret_key, $serializeData);
+    }
+
+    public function generatePublicKey($regenerate = false)
+    {
+        if ($this->public_key === null || $regenerate) {
+            $algo = self::TOKEN_ALGO;
+            $secretKey = Yii::$app->security->generateRandomString();
+            $data = $this->getFormattedData();
+            $serializeData = $this->serializeData($data);
+            $this->secret_key = $secretKey; // set new secret key
+            $this->public_key = self::getPublicKey($secretKey, $serializeData);
+        }
+    }
+
+    protected function getFormattedData($data = null)
+    {
+        $data = $data === null ? $this->data : $data;
+        if (!is_array($data)) {
+            $data = Json::isJson($data) ? Json::decode($data) : [];
+        }
         ksort($data);
-        return $this->token_key == self::generateTokenKey($this->secret, $data);
+        return $data;
     }
 
-    public function claim($data)
+    protected function serializeData(array $data)
     {
-        if (!$this->verifyData($data)) return false;
-        $this->renew(-1);
-        return true;
+        return Json::encode($data);
     }
 
-    public function renew($duration = self::TOKEN_DEFAULT_DURATION)
+    public function getIsExpired()
     {
+        return self::find()
+            ->andWhere(['id' => $this->id])
+            ->andWhere(['<', 'expire_at', new \yii\db\Expression('NOW()')])
+            ->exists();
+    }
+
+    public function renew($duration = null)
+    {
+        $this->generatePublicKey(true);
         $this->duration = $duration;
         return $this->save();
     }
 
-    public static function create($model, $type, $data = [], $duration = self::TOKEN_DEFAULT_DURATION)
+    protected static function getPublicKey($secretKey, $serializeData = null)
     {
-        $modelClass = get_class($model);
-        $modelPrimaryKey = $model->getPrimaryKey(true);
-        $secret = Yii::$app->security->generateRandomString(self::TOKEN_SECRET_LENGTH);
-        $tokenKey = self::generateTokenKey($secret, $data);
-
-        $token = new self([
-            'duration'          => $duration,
-            'model_class'       => $modelClass,
-            'model_primary_key' => $modelPrimaryKey,
-            'type'              => $type,
-            'secret'            => $secret,
-            'token_key'         => $tokenKey,
-            'data'              => $data,
-        ]);
-        if (!$token->save()) return false;
-
-        return $token;
-    }
-
-    public static function claimInstance($model, $type, $tokenKey, $data = [])
-    {
-        $token = self::getInstance($model, $type, $tokenKey);
-        if (!$token) return false;
-        return $token->claim($data);
-    }
-
-    public static function getInstance($model, $type, $tokenKey, $includeExpired = false)
-    {
-        $modelClass         = get_class($model);
-        $modelPrimaryKey    = $model->getPrimaryKey(true);
-        $query = self::find()
-            ->andWhere([
-                'model_class'       => $modelClass,
-                'model_primary_key' => serialize($modelPrimaryKey),
-                'type'              => $type,
-                'token_key'         => $tokenKey,
-            ]);
-        if (!$includeExpired) $query->andWhere(['>=', 'expire_at', new Expression('NOW()')]);
-        return $query->one();
-    }
-
-    public static function generateTokenKey($secret, $data = [], $algo = self::TOKEN_ALGO)
-    {
-        ksort($data);
-        $hash = hash_init($algo, HASH_HMAC, $secret);
-        hash_update($hash, serialize($data));
+        $algo = 'sha1';
+        $hash = hash_init($algo, HASH_HMAC, $secretKey);
+        hash_update($hash, $serializeData);
         return hash_final($hash);
     }
 }

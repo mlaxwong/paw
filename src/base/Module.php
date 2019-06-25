@@ -4,6 +4,7 @@ namespace paw\base;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
+use yii\helpers\Inflector;
 
 class Module extends \yii\base\Module
 {
@@ -49,7 +50,7 @@ class Module extends \yii\base\Module
             $files = FileHelper::findFiles($controllerPath, ['only' => ['*Controller.php']]);
             $this->_controllers = ArrayHelper::map($files, function ($file) {
                 $basename = basename($file, 'Controller.php');
-                return strtolower($basename);
+                return Inflector::camel2id($basename);
             }, function ($file) use ($controllerNamespace) {
                 $basename = basename($file, '.php');
                 $class = $controllerNamespace . '\\' . $basename;
