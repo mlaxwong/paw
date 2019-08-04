@@ -20,8 +20,7 @@ class View extends \yii\web\View
             $this->theme['class'] = $this->themeClass;
         }
 
-        if ($this->theme)
-        {
+        if ($this->theme) {
             $this->theme = Yii::createObject($this->theme);
             $this->theme->registerAsset($this);
         }
@@ -38,7 +37,9 @@ class View extends \yii\web\View
     {
         $controller = Yii::$app->controller;
 
-        if (!$controller) return null;
+        if (!$controller) {
+            return null;
+        }
 
         $module = $controller->module;
 

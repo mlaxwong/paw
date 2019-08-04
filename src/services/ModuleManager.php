@@ -27,6 +27,7 @@ class ModuleManager extends Component implements BootstrapInterface
             // echo '</pre>';
             $this->registerModule($moduleId, $moduleConfig);
             $this->registerUrlRule($urlRules);
+            $this->registerCustomUrlManagerRule($moduleConfig);
         }
         // die;
     }
@@ -34,6 +35,15 @@ class ModuleManager extends Component implements BootstrapInterface
     protected function registerModule($moduleId, $moduleConfig)
     {
         Yii::$app->setModule($moduleId, $moduleConfig);
+    }
+
+    protected function registerCustomUrlManagerRule($moduleConfig)
+    {
+        if (isset($moduleConfig['components']['urlManager'])) {
+            if (isset($moduleConfig['components']['urlManager']['rules'])) {
+                $this->registerUrlRule($moduleConfig['components']['urlManager']['rules']);
+            }
+        }
     }
 
     protected function registerUrlRule($urlRules)
@@ -44,34 +54,43 @@ class ModuleManager extends Component implements BootstrapInterface
     protected function getModuleObject($moduleId, $moduleConfig)
     {
         $moduleClass = is_string($moduleConfig) ? $moduleConfig : $moduleConfig['class'];
-        return new $moduleClass($moduleId);
+        $module = new $moduleClass($moduleId, null, ['pauseInit' => true]);
+        if (isset($moduleConfig['modules'])) {
+            $submodules = [];
+            foreach ($moduleConfig['modules'] as $submoduleId => $submoduleConfig) {
+                $submodules[] = $this->getModuleObject($submoduleId, $submoduleConfig);
+            }
+            $module->modules = $submodules;
+        }
+        return $module;
     }
 
-    protected function getModuleUrlRules($module)
+    protected function getModuleUrlRules($module, $parentUrlPrefix = null)
     {
         $rules = [];
         $moduleId = $module->id;
         $isDefaultModule = $this->defaultModule == $moduleId;
-        $urlPrefix = $isDefaultModule ? '' : "$moduleId/";
+        $urlPrefix = $parentUrlPrefix . ($isDefaultModule ? '' : "$moduleId/");
 
         $controllersKeys = array_keys($module->controllers);
         $defaultControllerRules = [];
         foreach ($controllersKeys as $controllersKey) {
             if ($controllersKey == 'default') {
                 $defaultControllerRules = ArrayHelper::merge($defaultControllerRules, [
-                    "$urlPrefix<action>" => "$moduleId/default/<action>",
-                    "$urlPrefix<action:()>" => "$moduleId/default/index",
+                    "$urlPrefix<action>" => "$parentUrlPrefix$moduleId/default/<action>",
+                    "$urlPrefix<action>/<blank:()>" => "$parentUrlPrefix$moduleId/default/<action>",
+                    "$urlPrefix<action:()>" => "$parentUrlPrefix$moduleId/default/index",
                 ]);
                 if ($urlPrefix) {
                     $defaultControllerRules = ArrayHelper::merge($defaultControllerRules, [
-                        "$moduleId" => "$moduleId/default/index",
+                        "$parentUrlPrefix$moduleId" => "$parentUrlPrefix$moduleId/default/index",
                     ]);
                 }
             } else {
                 $rules = ArrayHelper::merge($rules, [
-                    "$urlPrefix<controller:($controllersKey)>/<action>" => "$moduleId/<controller>/<action>",
-                    "$urlPrefix<controller:($controllersKey)>" => "$moduleId/<controller>/index",
-                    "$urlPrefix<controller:($controllersKey)>/<action:()>" => "$moduleId/<controller>/index",
+                    "$urlPrefix<controller:($controllersKey)>/<action>" => "$parentUrlPrefix$moduleId/<controller>/<action>",
+                    "$urlPrefix<controller:($controllersKey)>" => "$parentUrlPrefix$moduleId/<controller>/index",
+                    "$urlPrefix<controller:($controllersKey)>/<action:()>" => "$parentUrlPrefix$moduleId/<controller>/index",
                 ]);
             }
         }
@@ -85,16 +104,24 @@ class ModuleManager extends Component implements BootstrapInterface
             ArrayHelper::removeValue($moduleIds, $moduleId);
             $pattern = $moduleIds ? ':^((?!' . implode(')(?!', $moduleIds) . '))[\w-\/]+' : '';
             $rules = ArrayHelper::merge($rules, [
-                "<action$pattern>" => "$moduleId/default/<action>",
+                "<action$pattern>" => "$parentUrlPrefix$moduleId/default/<action>",
             ]);
         }
 
+        if ($module->modules) {
+            foreach ($module->modules as $submodule) {
+                $subrules = $this->getModuleUrlRules($submodule, $moduleId . '/');
+                $rules = ArrayHelper::merge($subrules, $rules);
+            }
+        }
+
         // if ($moduleId == 'client') {
+        //     print_r($module->modules);die;
+
         //     echo '<pre>';
         //     echo htmlspecialchars(print_r($rules, true));
         //     echo '</pre>';die;
         // }
-
         return $rules;
     }
 }

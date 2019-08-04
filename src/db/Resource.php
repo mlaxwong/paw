@@ -18,6 +18,8 @@ abstract class Resource extends Model implements ActiveQueryInterface
 
     protected $_findMethod = 'find';
 
+    protected $_listFormat = null;
+
     abstract public static function modelClass();
 
     public function rules()
@@ -29,6 +31,24 @@ abstract class Resource extends Model implements ActiveQueryInterface
     public function search($query)
     {
 
+    }
+
+    public function map($from, $to = null, $group = null)
+    {
+        if (is_array($from)) {
+            $to = function ($model) use ($from) {
+                $format = [];
+                foreach ($from as $key => $value) {
+                    $format[$key] = $model->{$value};
+                }
+                return $format;
+            };
+            $from = 'id';
+            $this->_listFormat = [$from, $to, $group];
+        } else {
+            $this->_listFormat = [$from, $to, $group];
+        }
+        return $this;
     }
 
     public static function getInstance($config = [])
@@ -103,7 +123,14 @@ abstract class Resource extends Model implements ActiveQueryInterface
     public function all($db = null)
     {
         $dataProvider = $this->getDataProvider();
-        return $dataProvider->models;
+        $models = $dataProvider->models;
+
+        if ($models && $this->_listFormat) {
+            $params = \yii\helpers\ArrayHelper::merge([$models], $this->_listFormat);
+            $models = call_user_func_array([\yii\helpers\ArrayHelper::class, 'map'], $params);
+        }
+
+        return $models;
     }
 
     public function one($db = null)

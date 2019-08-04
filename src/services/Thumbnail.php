@@ -107,7 +107,8 @@ class Thumbnail extends Component
 
         if (Url::isRelative($url)) {
             $host = Yii::$app->request->hostInfo;
-            $url = Yii::getAlias("{$host}{$url}");
+            // $url = $host . Yii::getAlias("@web{$url}");
+            $url = $host . Yii::getAlias("{$url}");
         }
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new InvalidParamException(Yii::t('app', '$url expects a valid URL'));

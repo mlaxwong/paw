@@ -12,6 +12,8 @@ class Module extends \yii\base\Module
 
     public $theme;
 
+    public $pauseInit = false;
+
     protected $_config = [];
 
     protected $_viewPath;
@@ -19,6 +21,8 @@ class Module extends \yii\base\Module
     protected $_controllerPath;
 
     protected $_controllers = null;
+
+    protected $_route = null;
 
     public function __construct($id, $parent = null, $config = [])
     {
@@ -29,7 +33,22 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
-        $this->registerComponents($this->getFullConfig(), Yii::$app ? Yii::$app->config : []);
+        if (!$this->pauseInit) {
+            $this->registerComponents($this->getFullConfig(), Yii::$app ? Yii::$app->config : []);
+        }
+    }
+
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->initRoute($action);
+
+        $this->initLayout($this->getFullConfig(), Yii::$app ? Yii::$app->config : []);
+
+        return true;
     }
 
     public function getControllerPath()
@@ -156,5 +175,31 @@ class Module extends \yii\base\Module
             }
         }
         return ArrayHelper::merge($based, $extra);
+    }
+
+    protected function initRoute($action)
+    {
+        $controller = $action->controller;
+        $this->_route = "$controller->id/$action->id";
+    }
+
+    protected function getRoute()
+    {
+        return $this->_route;
+    }
+
+    protected function initLayout($config, $appConfig = [])
+    {
+        if (isset($config['layout'])) {
+            if (!isset($config['layoutPath'])) {
+                $this->layoutPath = Yii::$app->layoutPath;
+            }
+        }
+
+        // if ($this->id == 'client') {
+        //     echo '<pre>';
+        //     print_r($appConfig);
+        //     die;
+        // }
     }
 }
