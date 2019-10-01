@@ -71,6 +71,7 @@ class ModuleManager extends Component implements BootstrapInterface
         $moduleId = $module->id;
         $isDefaultModule = $this->defaultModule == $moduleId;
         $urlPrefix = $parentUrlPrefix . ($isDefaultModule ? '' : "$moduleId/");
+        $urlPrefix = $this->removeDefaultPrefix($urlPrefix);
 
         $controllersKeys = array_keys($module->controllers);
         $defaultControllerRules = [];
@@ -82,8 +83,9 @@ class ModuleManager extends Component implements BootstrapInterface
                     "$urlPrefix<action:()>" => "$parentUrlPrefix$moduleId/default/index",
                 ]);
                 if ($urlPrefix) {
+                    $defaultUrlPrefix = $this->removeDefaultPrefix("$parentUrlPrefix$moduleId");
                     $defaultControllerRules = ArrayHelper::merge($defaultControllerRules, [
-                        "$parentUrlPrefix$moduleId" => "$parentUrlPrefix$moduleId/default/index",
+                        $defaultUrlPrefix => "$parentUrlPrefix$moduleId/default/index",
                     ]);
                 }
             } else {
@@ -115,13 +117,20 @@ class ModuleManager extends Component implements BootstrapInterface
             }
         }
 
-        // if ($moduleId == 'client') {
-        //     print_r($module->modules);die;
+        // if ($moduleId == 'admin') {
+        //     // print_r($module->modules);die;
 
         //     echo '<pre>';
         //     echo htmlspecialchars(print_r($rules, true));
         //     echo '</pre>';die;
         // }
         return $rules;
+    }
+
+    protected function removeDefaultPrefix($str)
+    {
+        return preg_replace_callback('/^' . $this->defaultModule . '\//i', function ($matches) {
+            return null;
+        }, $str);
     }
 }

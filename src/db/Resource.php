@@ -136,7 +136,7 @@ abstract class Resource extends Model implements ActiveQueryInterface
     public function one($db = null)
     {
         $dataProvider = $this->getDataProvider();
-        return isset($dataProvider->models[0]) ? $dataProvider->models[0] : null;
+        return $dataProvider->query->one();
     }
 
     public function count($q = '*', $db = null)
