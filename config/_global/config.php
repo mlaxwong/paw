@@ -15,6 +15,7 @@ return [
             'password' => env('DB_PASSWORD'),
             'tablePrefix' => env('DB_TABLE_PREFIX', 'prefix_'),
             'charset' => 'utf8',
+            'enableSchemaCache' => !YII_DEBUG,
             // 'enableSchemaCache' => YII_ENV_PROD,
         ],
         'authManager' => [

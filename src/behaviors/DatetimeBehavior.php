@@ -18,12 +18,26 @@ class DatetimeBehavior extends Behavior
     public function events()
     {
         return [
-            // BaseActiveRecord::EVENT_BEFORE_VALIDATE => 'prepareForInsert',
+            BaseActiveRecord::EVENT_BEFORE_VALIDATE => 'beforeValidate',
             BaseActiveRecord::EVENT_AFTER_VALIDATE => 'afterValidate',
             BaseActiveRecord::EVENT_BEFORE_INSERT => 'prepareForInsert',
             BaseActiveRecord::EVENT_BEFORE_UPDATE => 'prepareForInsert',
             BaseActiveRecord::EVENT_AFTER_FIND => 'prepareForFind',
         ];
+    }
+
+    public function beforeValidate($event)
+    {
+        foreach ($this->attributes as $attribute) {
+            $owner = $this->owner;
+            $value = $owner->{$attribute};
+            $value = trim($value);
+            if ($value) {
+                $datetime = new \DateTime($value, new \DateTimeZone(Yii::$app->timeZone));
+                $owner->{$attribute} = $datetime->format($this->insertFormat);
+            }
+            // echo $datetime->format('Y-m-d') . ' z<br />';
+        }
     }
 
     public function afterValidate($event)
