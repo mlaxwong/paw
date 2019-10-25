@@ -42,7 +42,7 @@ class StringHelper extends \yii\helpers\StringHelper
         return ($placeholders === []) ? $message : strtr($message, $placeholders);
     }
 
-    public function numabbr($number)
+    public static function numabbr($number)
     {
         $abbrevs = [12 => 'T', 9 => 'B', 6 => 'M', 3 => 'K', 0 => ''];
 
