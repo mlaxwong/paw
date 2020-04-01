@@ -1,7 +1,6 @@
 <?php
 namespace paw\services;
 
-use Imagine\Image\ManipulatorInterface;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -11,6 +10,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\imagine\Image as Imagine;
+use Imagine\Image\ManipulatorInterface;
+use paw\helpers\StringHelper;
 
 class Thumbnail extends Component
 {
@@ -105,12 +106,12 @@ class Thumbnail extends Component
         $quality = $options['quality'] ?: 60;
         $mode = $options['mode'] ?: ManipulatorInterface::THUMBNAIL_OUTBOUND;
 
-        if (Url::isRelative($url)) {
+        if (!file_exists($url) && Url::isRelative($url)) {
             $host = Yii::$app->request->hostInfo;
             // $url = $host . Yii::getAlias("@web{$url}");
             $url = $host . Yii::getAlias("{$url}");
         }
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        if (!filter_var($url, FILTER_VALIDATE_URL) && !file_exists($url)) {
             throw new InvalidParamException(Yii::t('app', '$url expects a valid URL'));
         }
         // $width = $width ?: $this->defaultWidth;
@@ -147,13 +148,22 @@ class Thumbnail extends Component
     ) {
         $filename = basename($url);
         try {
-            $imageData = @file_get_contents($url);
+            $arrContextOptions = [
+                "ssl" => [
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ],
+            ];
+            $imageData = @file_get_contents($url, false, stream_context_create($arrContextOptions));
+            // $imageData = @file_get_contents($url, false, stream_context_create($arrContextOptions));
+            
             list($sourceWidth, $sourceHeight) = $this->getImageSize($imageData);
             list($width, $height) = $this->getImageNewSize($sourceWidth, $sourceHeight, $width, $height);
             $dirWidthLabel = str_replace('.', '_', $width);
             $dirHeightLabel = str_replace('.', '_', $height);
 
-            $thumbnailPath = Yii::getAlias("$this->thumbnailsPath/{$dirWidthLabel}x{$dirHeightLabel}/{$filename}");
+            $thumbnailDir = StringHelper::strtr($this->thumbnailsPath, ['filename' => $filename]);
+            $thumbnailPath = Yii::getAlias("$thumbnailDir/{$dirWidthLabel}x{$dirHeightLabel}/{$filename}");
 
             if ($imageData) {
                 FileHelper::createDirectory(dirname($thumbnailPath));
@@ -166,7 +176,8 @@ class Thumbnail extends Component
         } catch (Exception $e) {
             return null;
         }
-        return Yii::getAlias(str_replace(Yii::getAlias($this->thumbnailsPath), $this->thumbnailsBaseUrl,
+        $thumbnailsBaseUrl = StringHelper::strtr($this->thumbnailsBaseUrl, ['filename' => $filename]);
+        return Yii::getAlias(str_replace(Yii::getAlias($thumbnailDir), $thumbnailsBaseUrl,
             $thumbnailPath));
     }
 
@@ -184,7 +195,7 @@ class Thumbnail extends Component
             return [$width, $height];
         }
 
-        if ($width === null && $height === bull) {
+        if ($width === null && $height === null) {
             $width = 300;
         }
 
