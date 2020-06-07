@@ -106,14 +106,18 @@ class Thumbnail extends Component
         $quality = $options['quality'] ?: 60;
         $mode = $options['mode'] ?: ManipulatorInterface::THUMBNAIL_OUTBOUND;
 
-        if (!file_exists($url) && Url::isRelative($url)) {
-            $host = Yii::$app->request->hostInfo;
-            // $url = $host . Yii::getAlias("@web{$url}");
-            $url = $host . Yii::getAlias("{$url}");
-        }
         if (!filter_var($url, FILTER_VALIDATE_URL) && !file_exists($url)) {
-            throw new InvalidParamException(Yii::t('app', '$url expects a valid URL'));
+            return null;
         }
+
+        // if (!filter_var($url, FILTER_VALIDATE_URL) && !file_exists($url)) {
+        //     throw new InvalidParamException(Yii::t('app', '$url expects a valid URL'));
+        // }
+        // if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        //     throw new InvalidParamException(Yii::t('app', '$url expects a valid URL'));
+        // }
+        // throw new \Exception($url);
+        // die;
         // $width = $width ?: $this->defaultWidth;
         // $this->defaultHeight = $this->defaultHeight ?: $width;
         // $height = $height ?: $this->defaultHeight;
