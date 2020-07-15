@@ -3,7 +3,7 @@ namespace paw\services;
 
 use Yii;
 use yii\base\Component;
-use yii\base\Exception;
+// use yii\base\Exception;
 use yii\base\InvalidParamException;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
@@ -106,6 +106,7 @@ class Thumbnail extends Component
         $quality = $options['quality'] ?: 60;
         $mode = $options['mode'] ?: ManipulatorInterface::THUMBNAIL_OUTBOUND;
 
+        $url = Yii::getAlias($url);
         if (!filter_var($url, FILTER_VALIDATE_URL) && !file_exists($url)) {
             return null;
         }
@@ -177,7 +178,10 @@ class Thumbnail extends Component
             } else {
                 return null;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $ex) {
+            if (YII_DEBUG) {
+                throw new \Exception($ex);
+            }
             return null;
         }
         $thumbnailsBaseUrl = StringHelper::strtr($this->thumbnailsBaseUrl, ['filename' => $filename]);
